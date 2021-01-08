@@ -32,17 +32,39 @@ class gif{
         return this.id;
     }
 
+    @Override
+    public String toString() {
+        return "gif{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", fav=" + fav +
+                '}';
+    }
+
     public gif(String name, String id){
         this.name=name;
         this.id=id;
+        this.fav=false;
     }
 }
 
 public class gifs {
-    private ArrayList<gif> gifs_list;
+    private static ArrayList<gif> gifs_list;
 
     public void add_gif(String name, String id){
         gifs_list.add(new gif(name, id));
+    }
+
+    public gif get_gif(int idx){
+        return gifs_list.get(idx);
+    }
+
+    public ArrayList<gif> get_gif(){
+        return gifs_list;
+    }
+
+    public int get_size(){
+        return gifs_list.size();
     }
 
     public gifs(){
