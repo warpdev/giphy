@@ -6,6 +6,7 @@ class gif{
     private String name;
     private String id;
     private Boolean fav;
+    private int height;
 
     public Boolean getFav() {
         return fav;
@@ -38,21 +39,31 @@ class gif{
                 "name='" + name + '\'' +
                 ", id='" + id + '\'' +
                 ", fav=" + fav +
+                ", height=" + height +
                 '}';
     }
 
-    public gif(String name, String id){
+    public gif(String name, String id, String h){
         this.name=name;
         this.id=id;
         this.fav=false;
+        this.height=Integer.parseInt(h);
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }
 
 public class gifs {
     private static ArrayList<gif> gifs_list;
 
-    public void add_gif(String name, String id){
-        gifs_list.add(new gif(name, id));
+    public void add_gif(String name, String id, String h){
+        gifs_list.add(new gif(name, id,h));
     }
 
     public gif get_gif(int idx){

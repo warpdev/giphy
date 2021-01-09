@@ -3,6 +3,7 @@ package com.warpdev.giphytest;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,7 +45,7 @@ public class trend_page extends AppCompatActivity {
         protected Void doInBackground(String... strings) {
             Log.d("test", "hello");
             try {
-                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&limit=5");
+                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"");
                 HttpsURLConnection connection = (HttpsURLConnection) trend_endpoint.openConnection();
                 Log.d("test", "chkkk");
 
@@ -64,10 +65,9 @@ public class trend_page extends AppCompatActivity {
                     gifs_list=new gifs();
 
                     for(int i=0; i<25; i++) {
-                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width_small").getString("mp4"), jsonArray.getJSONObject(i).getString("id"));
+                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("height"));
                         Log.d("test",gifs_list.get_gif(i).toString());
                     }
-                    Log.d("test",jsonObject.getJSONArray("data").getJSONObject(3).getString("id"));
 //                JsonReader json_reader = new JsonReader(response_reader); //아직 미완성 나중에 테스트
 //                json_reader.beginObject(); // 처음 3개짜리에서
 //                while (json_reader.hasNext()) {
@@ -99,9 +99,10 @@ public class trend_page extends AppCompatActivity {
             giflist_adapter list_adapter = new giflist_adapter(gifs_list);
             Log.d("test",gifs_list.get_size()+"");
             rec_lef = findViewById(R.id.rec_lef);
-            rec_rig = findViewById(R.id.rec_rig);
             rec_lef.setAdapter(list_adapter);
-            rec_rig.setAdapter(list_adapter);
+            RecyclerView recyclerView = findViewById(R.id.rec_lef);
+            RecyclerView.LayoutManager LM = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(LM);
 
             Log.d("test","helloooooo");
         }

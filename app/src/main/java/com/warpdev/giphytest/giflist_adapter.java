@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.VideoView;
 
@@ -12,17 +13,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.bumptech.glide.Glide;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class giflist_ViewHolder extends RecyclerView.ViewHolder {
-        public VideoView videoView;
+        public ImageView GifView;
         public Switch aSwitch;
 
         public giflist_ViewHolder(View v) {
             super(v);
-            videoView = v.findViewById(R.id.gif_tile);
+            GifView = v.findViewById(R.id.gif_tile);
             aSwitch = v.findViewById(R.id.favor_switch);
 
         }
@@ -46,14 +49,16 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         Uri turi = Uri.parse(gifs_list.get_gif(position).getName());
         Log.d("uri",turi.toString());
-        viewHolder.videoView.setVideoURI(turi);
+        int w=viewHolder.GifView.getWidth();
+        int h=(int)(gifs_list.get_gif(position).getHeight()*((double)w/200.0));
+        Glide.with(viewHolder.GifView).load(turi).override(w,h).into(viewHolder.GifView);
 
+        Log.d("size","w : "+w+", h : "+h);
     }
 
     @Override
     public int getItemCount() {
 
-        Log.d("adapter",gifs_list.get_size()+"");
         return gifs_list.get_size();
     }
 }
