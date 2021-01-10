@@ -61,8 +61,8 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         viewHolder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.e("test","changed");
-                Log.e("test",isChecked+""+" pos: "+position);
+//                Log.e("test","changed");
+//                Log.e("test",isChecked+""+" pos: "+position);
                 SharedPreferences.Editor SP_editor = sharedPreferences.edit();
 
                 for(int i = 0; i<gifs_list.get_size(); i++){
@@ -82,7 +82,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         });
 
         viewHolder.aSwitch.setChecked(gifs_list.get_gif(position).getFav());
-        Log.e("size","w : "+w+", h : "+h);
+//        Log.e("size","w : "+w+", h : "+h);
     }
 
     @Override

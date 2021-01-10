@@ -27,9 +27,9 @@ public class trend_page extends AppCompatActivity {
     private RecyclerView gif_recview;
     private boolean loading=true;
     private gifs gifs_list;
-    SharedPreferences sharedPreferences;
-    giflist_adapter list_adapter;
-    RecyclerView.LayoutManager LM;
+    private SharedPreferences sharedPreferences;
+    private giflist_adapter list_adapter;
+    private RecyclerView.LayoutManager LM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class trend_page extends AppCompatActivity {
 
                 Log.e("ck","loading : "+ loading + " pos : "+ pos+" size : "+gifs_list.get_size());
 
-                if(!loading && staggeredGridLayoutManager!= null && pos>=gifs_list.get_size()-1){
+                if(!loading && staggeredGridLayoutManager!= null && pos>=gifs_list.get_size()-10){
                     Log.e("load","new");
                     loading=true;
                     read_data();
@@ -73,7 +73,6 @@ public class trend_page extends AppCompatActivity {
 
             }
         });
-        loading=false;
 
 
 
@@ -83,7 +82,6 @@ public class trend_page extends AppCompatActivity {
         contactAPI con_api = new contactAPI();
         con_api.execute(getString(R.string.gif_api_key));
 
-        loading=false;
 
     }
 
@@ -109,18 +107,18 @@ public class trend_page extends AppCompatActivity {
                     }
                     JSONObject jsonObject = new JSONObject(sb.toString());
                     JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
 
-                    Log.e("size",gifs_list.get_size()+"");
                     int t_size=gifs_list.get_size();
-                    for(int i=t_size; i<t_size+25; i++) {
+                    for(int i=0; i<25; i++) {
+                        Log.e("add","add");
                         gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("height"));
-                        if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
+                        Log.e("size",gifs_list.get_size()+"");
+                        if(sharedPreferences.contains(gifs_list.get_gif(t_size+i).getId())){
                             Log.e("True","appear");
-                            gifs_list.get_gif(i).setFav(true);
+                            gifs_list.get_gif(t_size+i).setFav(true);
                         }
-                        Log.e("test",gifs_list.get_gif(i).toString());
+                        Log.e("test",gifs_list.get_gif(t_size+i).toString());
                     }
 //                JsonReader json_reader = new JsonReader(response_reader); //아직 미완성 나중에 테스트
 //                json_reader.beginObject(); // 처음 3개짜리에서
@@ -152,9 +150,11 @@ public class trend_page extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
 
 
+            Log.e("connection","finish");
             list_adapter.notifyDataSetChanged();
 
 
+            loading=false;
         }
 
 
