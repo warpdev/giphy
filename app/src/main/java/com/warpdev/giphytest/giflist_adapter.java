@@ -1,10 +1,15 @@
 package com.warpdev.giphytest;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.VideoView;
@@ -32,8 +37,10 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private gifs gifs_list;
-    public giflist_adapter(gifs gifs_list){
+    private SharedPreferences sharedPreferences;
+    public giflist_adapter(gifs gifs_list, SharedPreferences sharedPreferences){
         this.gifs_list=gifs_list;
+        this.sharedPreferences=sharedPreferences;
     }
 
     @Override
@@ -47,13 +54,35 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         giflist_ViewHolder viewHolder = (giflist_ViewHolder) holder;
 
-        Uri turi = Uri.parse(gifs_list.get_gif(position).getName());
-        Log.d("uri",turi.toString());
+        Uri turi = Uri.parse(gifs_list.get_gif(position).getUrl());
         int w=viewHolder.GifView.getWidth();
         int h=(int)(gifs_list.get_gif(position).getHeight()*((double)w/200.0));
-        Glide.with(viewHolder.GifView).load(turi).override(w,h).into(viewHolder.GifView);
+        Glide.with(viewHolder.GifView).load(turi).override(w,h).placeholder(R.drawable.ic_launcher_background).into(viewHolder.GifView);
+        viewHolder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.e("test","changed");
+                Log.e("test",isChecked+""+" pos: "+position);
+                SharedPreferences.Editor SP_editor = sharedPreferences.edit();
 
-        Log.d("size","w : "+w+", h : "+h);
+                for(int i = 0; i<gifs_list.get_size(); i++){
+                    gifs_list.get_gif(position).setFav(isChecked);
+                    if(gifs_list.get_gif(i).getFav()){
+                        SP_editor.putString(gifs_list.get_gif(i).getId(),gifs_list.get_gif(i).getUrl());
+                    }
+                    else{
+                        if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
+                            SP_editor.remove(gifs_list.get_gif(i).getId());
+                            SP_editor.apply();
+                        }
+                    }
+                }
+                SP_editor.commit();
+            }
+        });
+
+        viewHolder.aSwitch.setChecked(gifs_list.get_gif(position).getFav());
+        Log.e("size","w : "+w+", h : "+h);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.warpdev.giphytest;
 import java.util.ArrayList;
 
 class gif{
-    private String name;
+    private String url;
     private String id;
     private Boolean fav;
     private int height;
@@ -17,16 +17,8 @@ class gif{
     }
 
 
-    public void setName(String s){
-        this.name=s;
-    }
-
     public void setId(String id){
         this.id=id;
-    }
-
-    public String getName(){
-        return this.name;
     }
 
     public String getId(){
@@ -36,15 +28,23 @@ class gif{
     @Override
     public String toString() {
         return "gif{" +
-                "name='" + name + '\'' +
+                "name='" + url + '\'' +
                 ", id='" + id + '\'' +
                 ", fav=" + fav +
                 ", height=" + height +
                 '}';
     }
 
-    public gif(String name, String id, String h){
-        this.name=name;
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public gif(String url, String id, String h){
+        this.url=url;
         this.id=id;
         this.fav=false;
         this.height=Integer.parseInt(h);
@@ -75,8 +75,12 @@ public class gifs {
     }
 
     public int get_size(){
+        if(gifs_list==null){
+            return 0;
+        }
         return gifs_list.size();
     }
+
 
     public gifs(){
         gifs_list=new ArrayList<gif>();

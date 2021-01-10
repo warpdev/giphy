@@ -1,15 +1,16 @@
 package com.warpdev.giphytest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.Log;
-import android.view.View;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,33 +24,79 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class trend_page extends AppCompatActivity {
 
-    private JSONObject json;
-    private RecyclerView rec_lef;
-    private RecyclerView rec_rig;
-    private RecyclerView.LayoutManager lef_layMan;
-    private RecyclerView.LayoutManager rig_layMan;
+    private RecyclerView gif_recview;
+    private boolean loading=true;
+    private gifs gifs_list;
+    SharedPreferences sharedPreferences;
+    giflist_adapter list_adapter;
+    RecyclerView.LayoutManager LM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_page);
-        Log.d("test","hello1");
+        gifs_list=new gifs();
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        list_adapter = new giflist_adapter(gifs_list,sharedPreferences);
+        gif_recview=findViewById(R.id.gif_recview);
+        LM = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         contactAPI con_api = new contactAPI();
         con_api.execute(getString(R.string.gif_api_key));
+        gif_recview.setAdapter(list_adapter);
+        gif_recview.setLayoutManager(LM);
+        gif_recview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                int[] lastVisItems=staggeredGridLayoutManager.findLastVisibleItemPositions(null);
+                int pos=0;
+                for(int i= 0; i<lastVisItems.length; i++){
+                    if(pos<lastVisItems[i]){
+                        pos=lastVisItems[i];
+                    }
+                }
+
+                Log.e("ck","loading : "+ loading + " pos : "+ pos+" size : "+gifs_list.get_size());
+
+                if(!loading && staggeredGridLayoutManager!= null && pos>=gifs_list.get_size()-1){
+                    Log.e("load","new");
+                    loading=true;
+                    read_data();
+
+                }
+
+            }
+        });
+        loading=false;
+
+
+
+
     }
+    public void read_data(){
+        contactAPI con_api = new contactAPI();
+        con_api.execute(getString(R.string.gif_api_key));
+
+        loading=false;
+
+    }
+
+
     class contactAPI extends AsyncTask<String, Void, Void> {
 
-        private gifs gifs_list;
 
         @Override
         protected Void doInBackground(String... strings) {
-            Log.d("test", "hello");
             try {
-                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"");
+                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&offset="+gifs_list.get_size());
                 HttpsURLConnection connection = (HttpsURLConnection) trend_endpoint.openConnection();
-                Log.d("test", "chkkk");
 
-                Log.d("test", "Response" + connection.getResponseCode());
                 if (connection.getResponseCode() == 200) {
 
                     InputStream response_data = connection.getInputStream();
@@ -62,11 +109,18 @@ public class trend_page extends AppCompatActivity {
                     }
                     JSONObject jsonObject = new JSONObject(sb.toString());
                     JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    gifs_list=new gifs();
+                    SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
-                    for(int i=0; i<25; i++) {
+
+                    Log.e("size",gifs_list.get_size()+"");
+                    int t_size=gifs_list.get_size();
+                    for(int i=t_size; i<t_size+25; i++) {
                         gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("height"));
-                        Log.d("test",gifs_list.get_gif(i).toString());
+                        if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
+                            Log.e("True","appear");
+                            gifs_list.get_gif(i).setFav(true);
+                        }
+                        Log.e("test",gifs_list.get_gif(i).toString());
                     }
 //                JsonReader json_reader = new JsonReader(response_reader); //아직 미완성 나중에 테스트
 //                json_reader.beginObject(); // 처음 3개짜리에서
@@ -96,16 +150,14 @@ public class trend_page extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            giflist_adapter list_adapter = new giflist_adapter(gifs_list);
-            Log.d("test",gifs_list.get_size()+"");
-            rec_lef = findViewById(R.id.rec_lef);
-            rec_lef.setAdapter(list_adapter);
-            RecyclerView recyclerView = findViewById(R.id.rec_lef);
-            RecyclerView.LayoutManager LM = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
-            recyclerView.setLayoutManager(LM);
 
-            Log.d("test","helloooooo");
+
+            list_adapter.notifyDataSetChanged();
+
+
         }
+
+
 
         private JSONObject read_json(JsonReader json_reader) throws Exception {
             json_reader.beginObject();

@@ -9,7 +9,7 @@
     android:orientation="horizontal">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rec_lef"
+        android:id="@+id/gif_recview"
         android:layout_weight="1"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
