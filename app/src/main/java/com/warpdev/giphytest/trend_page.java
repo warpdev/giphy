@@ -40,6 +40,7 @@ public class trend_page extends AppCompatActivity {
         list_adapter = new giflist_adapter(gifs_list,sharedPreferences);
         gif_recview=findViewById(R.id.gif_recview);
         LM = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        LM.setItemPrefetchEnabled(true);
         contactAPI con_api = new contactAPI();
         con_api.execute(getString(R.string.gif_api_key));
         gif_recview.setAdapter(list_adapter);
@@ -112,7 +113,7 @@ public class trend_page extends AppCompatActivity {
                     int t_size=gifs_list.get_size();
                     for(int i=0; i<25; i++) {
                         Log.e("add","add");
-                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("fixed_width").getString("height"));
+                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"));
                         Log.e("size",gifs_list.get_size()+"");
                         if(sharedPreferences.contains(gifs_list.get_gif(t_size+i).getId())){
                             Log.e("True","appear");

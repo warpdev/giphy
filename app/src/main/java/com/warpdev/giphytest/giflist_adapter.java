@@ -2,6 +2,13 @@ package com.warpdev.giphytest;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -19,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,9 +63,15 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         giflist_ViewHolder viewHolder = (giflist_ViewHolder) holder;
 
         Uri turi = Uri.parse(gifs_list.get_gif(position).getUrl());
-        int w=viewHolder.GifView.getWidth();
-        int h=(int)(gifs_list.get_gif(position).getHeight()*((double)w/200.0));
-        Glide.with(viewHolder.GifView).load(turi).override(w,h).placeholder(R.drawable.ic_launcher_background).into(viewHolder.GifView);
+//        int w=viewHolder.GifView.getWidth();
+        int w=gifs_list.get_gif(position).getWidth();
+        int h=gifs_list.get_gif(position).getHeight();
+        Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.GRAY);
+        Drawable drawable = new BitmapDrawable(bitmap);
+//        int h=(int)(gifs_list.get_gif(position).getHeight()*((double)w/200.0));
+        Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).into(viewHolder.GifView);
         viewHolder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -82,7 +96,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         });
 
         viewHolder.aSwitch.setChecked(gifs_list.get_gif(position).getFav());
-//        Log.e("size","w : "+w+", h : "+h);
+        Log.e("size","w : "+w+", h : "+h);
     }
 
     @Override
