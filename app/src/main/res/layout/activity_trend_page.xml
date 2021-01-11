@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:gravity="center"
+    android:background="@color/cardview_dark_background"
     tools:context=".trend_page"
     android:orientation="horizontal">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gif_recview"
         app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

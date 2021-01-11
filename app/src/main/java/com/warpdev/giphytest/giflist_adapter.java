@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.net.SocketPermission;
@@ -76,7 +77,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.parseColor(colors[(color_param++)%5]));
         Drawable drawable = new BitmapDrawable(null,bitmap);
-        Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).into(viewHolder.GifView);
+        Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).override(w,h).into(viewHolder.GifView);
         viewHolder.aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {  //favorite 스위치 클릭할때
             SharedPreferences.Editor SP_editor = sharedPreferences.edit();
 

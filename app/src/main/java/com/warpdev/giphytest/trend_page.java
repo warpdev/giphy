@@ -57,8 +57,7 @@ public class trend_page extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
-                int[] lastVisItems=staggeredGridLayoutManager.findLastVisibleItemPositions(null);
+                int[] lastVisItems=((StaggeredGridLayoutManager)LM).findLastVisibleItemPositions(null);
                 int pos=0;
                 for(int i= 0; i<lastVisItems.length; i++){
                     if(pos<lastVisItems[i]){
