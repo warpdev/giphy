@@ -106,7 +106,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                         SP_editor.remove(gifs_list.get_gif(i).getId());
                         SP_editor.remove(gifs_list.get_gif(i).getId()+"_w");
-                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_h")ㅜ;
+                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_h");
                         SP_editor.apply();
                     }
                 }
