@@ -32,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.net.SocketPermission;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
 import java.util.Set;
 
 public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -47,12 +48,15 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    private static final String colors[] = {"#75FAA2", "#5ACAFA", "#8D41F6", "#ED706B", "#FDF276"};
     private gifs gifs_list;
     private SharedPreferences sharedPreferences;
     private Set<String> id_sets;
+    private int color_param;
     public giflist_adapter(gifs gifs_list, SharedPreferences sharedPreferences){
         this.gifs_list=gifs_list;
         this.sharedPreferences=sharedPreferences;
+        this.color_param=0;
     }
 
     @Override
@@ -70,7 +74,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int h=gifs_list.get_gif(position).getHeight();
         Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.GRAY);
+        canvas.drawColor(Color.parseColor(colors[(color_param++)%5]));
         Drawable drawable = new BitmapDrawable(null,bitmap);
         Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).into(viewHolder.GifView);
         viewHolder.aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {  //favorite 스위치 클릭할때
@@ -102,7 +106,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                         SP_editor.remove(gifs_list.get_gif(i).getId());
                         SP_editor.remove(gifs_list.get_gif(i).getId()+"_w");
-                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_h");
+                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_h")ㅜ;
                         SP_editor.apply();
                     }
                 }

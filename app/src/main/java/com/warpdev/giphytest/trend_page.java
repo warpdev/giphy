@@ -87,7 +87,6 @@ public class trend_page extends AppCompatActivity {
         protected Void doInBackground(String... strings) {
             try {
                 URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&offset="+gifs_list.get_size()+"&limit="+getResources().getInteger(R.integer.limit));
-                Log.e("size",gifs_list.get_size()+"");
                 HttpsURLConnection connection = (HttpsURLConnection) trend_endpoint.openConnection();
 
                 if (connection.getResponseCode() == 200) {
