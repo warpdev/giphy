@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashSet;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -27,6 +28,7 @@ public class trend_page extends AppCompatActivity {
 
     private RecyclerView gif_recview;
     private boolean loading=true;
+    private HashSet<String> id_sets;    //실시간 trend 위치 변동시에 두개가 나오는 문제 해결용
     private gifs gifs_list;
     private SharedPreferences sharedPreferences;
     private giflist_adapter list_adapter;
@@ -36,6 +38,7 @@ public class trend_page extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_page);
+        id_sets=new HashSet<>();
         gifs_list=new gifs();
         sharedPreferences = getSharedPreferences("favor",Context.MODE_PRIVATE);
         list_adapter = new giflist_adapter(gifs_list,sharedPreferences);
@@ -84,6 +87,7 @@ public class trend_page extends AppCompatActivity {
         protected Void doInBackground(String... strings) {
             try {
                 URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&offset="+gifs_list.get_size()+"&limit="+getResources().getInteger(R.integer.limit));
+                Log.e("size",gifs_list.get_size()+"");
                 HttpsURLConnection connection = (HttpsURLConnection) trend_endpoint.openConnection();
 
                 if (connection.getResponseCode() == 200) {
@@ -99,18 +103,22 @@ public class trend_page extends AppCompatActivity {
                     JSONArray jsonArray = jsonObject.getJSONArray("data");
                     int t_size = jsonArray.length();
                     for(int i=0; i<t_size; i++) {
-                        try {
-                            gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"),
-                                    jsonArray.getJSONObject(i).getString("id"),
-                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),
-                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"),
-                                    sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
-                        }catch (JSONException e){   //preivew가 없는경우에 original로 불러오기
-                            gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("url"),
-                                    jsonArray.getJSONObject(i).getString("id"),
-                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("height"),
-                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("width"),
-                                    sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+                        if(!id_sets.contains(jsonArray.getJSONObject(i).getString("id"))) {
+                            id_sets.add(jsonArray.getJSONObject(i).getString("id"));  //idset에있는지 없는지 먼저 체크하고 넣기
+                            try {
+
+                                gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"),
+                                        jsonArray.getJSONObject(i).getString("id"),
+                                        jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),
+                                        jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"),
+                                        sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+                            } catch (JSONException e) {   //preivew가 없는경우에 original로 불러오기
+                                gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("url"),
+                                        jsonArray.getJSONObject(i).getString("id"),
+                                        jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("height"),
+                                        jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("width"),
+                                        sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+                            }
                         }
                     }
                 }
