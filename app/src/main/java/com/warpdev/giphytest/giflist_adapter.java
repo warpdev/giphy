@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.Switch;
 import android.widget.VideoView;
 
@@ -28,8 +29,10 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.net.SocketPermission;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Set;
 
 public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class giflist_ViewHolder extends RecyclerView.ViewHolder {
@@ -46,6 +49,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private gifs gifs_list;
     private SharedPreferences sharedPreferences;
+    private Set<String> id_sets;
     public giflist_adapter(gifs gifs_list, SharedPreferences sharedPreferences){
         this.gifs_list=gifs_list;
         this.sharedPreferences=sharedPreferences;
@@ -63,14 +67,12 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         giflist_ViewHolder viewHolder = (giflist_ViewHolder) holder;
 
         Uri turi = Uri.parse(gifs_list.get_gif(position).getUrl());
-//        int w=viewHolder.GifView.getWidth();
         int w=gifs_list.get_gif(position).getWidth();
         int h=gifs_list.get_gif(position).getHeight();
         Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.GRAY);
-        Drawable drawable = new BitmapDrawable(bitmap);
-//        int h=(int)(gifs_list.get_gif(position).getHeight()*((double)w/200.0));
+        Drawable drawable = new BitmapDrawable(null,bitmap);
         Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).into(viewHolder.GifView);
         viewHolder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -82,11 +84,31 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 for(int i = 0; i<gifs_list.get_size(); i++){
                     gifs_list.get_gif(position).setFav(isChecked);
                     if(gifs_list.get_gif(i).getFav()){
+                        id_sets=sharedPreferences.getStringSet("favorlist",null);
+                        if(id_sets!=null){
+                            id_sets.add(gifs_list.get_gif(i).getId());
+                            Log.e("list","add");
+                        }
+
                         SP_editor.putString(gifs_list.get_gif(i).getId(),gifs_list.get_gif(i).getUrl());
+                        SP_editor.putInt(gifs_list.get_gif(i).getId()+"_w",gifs_list.get_gif(i).getWidth());
+                        SP_editor.putInt(gifs_list.get_gif(i).getId()+"_h",gifs_list.get_gif(i).getHeight());
+                        SP_editor.apply();
                     }
                     else{
                         if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
+
+                            id_sets=sharedPreferences.getStringSet("favorlist",null);
+
+                            if(id_sets!=null){
+                                id_sets.remove(gifs_list.get_gif(i).getId());
+                                SP_editor.remove("favorlist");
+                                SP_editor.putStringSet("favorlist",id_sets);
+                            }
+
                             SP_editor.remove(gifs_list.get_gif(i).getId());
+                            SP_editor.remove(gifs_list.get_gif(i).getId()+"_w");
+                            SP_editor.remove(gifs_list.get_gif(i).getId()+"_h");
                             SP_editor.apply();
                         }
                     }
@@ -96,7 +118,7 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         });
 
         viewHolder.aSwitch.setChecked(gifs_list.get_gif(position).getFav());
-        Log.e("size","w : "+w+", h : "+h);
+//        Log.e("size","w : "+w+", h : "+h);
     }
 
     @Override

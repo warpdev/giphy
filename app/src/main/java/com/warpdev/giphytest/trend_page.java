@@ -36,13 +36,12 @@ public class trend_page extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_page);
         gifs_list=new gifs();
-        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("favor",Context.MODE_PRIVATE);
         list_adapter = new giflist_adapter(gifs_list,sharedPreferences);
         gif_recview=findViewById(R.id.gif_recview);
         LM = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         LM.setItemPrefetchEnabled(true);
-        contactAPI con_api = new contactAPI();
-        con_api.execute(getString(R.string.gif_api_key));
+        read_data();
         gif_recview.setAdapter(list_adapter);
         gif_recview.setLayoutManager(LM);
         gif_recview.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -63,10 +62,9 @@ public class trend_page extends AppCompatActivity {
                     }
                 }
 
-                Log.e("ck","loading : "+ loading + " pos : "+ pos+" size : "+gifs_list.get_size());
+//                Log.e("ck","loading : "+ loading + " pos : "+ pos+" size : "+gifs_list.get_size());
 
-                if(!loading && staggeredGridLayoutManager!= null && pos>=gifs_list.get_size()-10){
-                    Log.e("load","new");
+                if(!loading && pos>=gifs_list.get_size()-10){
                     loading=true;
                     read_data();
 
@@ -82,8 +80,6 @@ public class trend_page extends AppCompatActivity {
     public void read_data(){
         contactAPI con_api = new contactAPI();
         con_api.execute(getString(R.string.gif_api_key));
-
-
     }
 
 
@@ -111,36 +107,19 @@ public class trend_page extends AppCompatActivity {
 
 
                     int t_size=gifs_list.get_size();
+                    Log.e("size",t_size+"");
                     for(int i=0; i<25; i++) {
-                        Log.e("add","add");
-                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"));
-                        Log.e("size",gifs_list.get_size()+"");
-                        if(sharedPreferences.contains(gifs_list.get_gif(t_size+i).getId())){
-                            Log.e("True","appear");
-                            gifs_list.get_gif(t_size+i).setFav(true);
-                        }
+                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"),sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+//                        if(sharedPreferences.contains(gifs_list.get_gif(t_size+i).getId())){
+//                            Log.e("True","appear");
+//                            gifs_list.get_gif(t_size+i).setFav(true);
+//                        }
                         Log.e("test",gifs_list.get_gif(t_size+i).toString());
                     }
-//                JsonReader json_reader = new JsonReader(response_reader); //아직 미완성 나중에 테스트
-//                json_reader.beginObject(); // 처음 3개짜리에서
-//                while (json_reader.hasNext()) {
-//                    String json_key = json_reader.nextName();
-//                    json_reader.beginArray();
-//                    JSONObject json_object = new JSONObject();
-//                    json_object.getJSONArray("data");
-//                    if(json_key.equals("data")){ //data찾는데 그건 배열로 이루어져있음
-//
-//                    }
-//                    String json_value = json_reader.nextString();
-//                    Log.d("JSON", json_key + " : " + json_value);
-//                }
-//                json_reader.close();
-
-
-//                Log.d("test",json_reader.toString());
                 }
                 connection.disconnect();
             } catch (Exception e) {
+                Log.e("error",e.toString());
                 System.out.println(e);
             }
 
@@ -158,19 +137,6 @@ public class trend_page extends AppCompatActivity {
             loading=false;
         }
 
-
-
-        private JSONObject read_json(JsonReader json_reader) throws Exception {
-            json_reader.beginObject();
-            JSONObject t_jsonobject = new JSONObject();
-            while (json_reader.hasNext()) {
-                String json_key = json_reader.nextName();
-                String json_value = json_reader.nextString();
-                Log.d("JSON", json_key + " : " + json_value);
-            }
-
-            return t_jsonobject;
-        }
 
     }
 }

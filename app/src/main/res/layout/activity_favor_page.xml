@@ -4,4 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".favor_page"/>
+    tools:context=".favor_page">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favor_rec"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+        tools:layout_editor_absoluteX="122dp"
+        tools:layout_editor_absoluteY="208dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

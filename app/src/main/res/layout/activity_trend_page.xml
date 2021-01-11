@@ -11,8 +11,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gif_recview"
         android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:layout_width="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+        android:layout_width="0dp"
         android:layout_height="match_parent" />
 
 </LinearLayout>

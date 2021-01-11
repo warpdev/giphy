@@ -52,12 +52,20 @@ class gif{
         this.url = url;
     }
 
-    public gif(String url, String id, String h, String w){
+    public gif(String url, String id, String h, String w, boolean fav){
         this.url=url;
         this.id=id;
-        this.fav=false;
+        this.fav=fav;
         this.height=Integer.parseInt(h);
         this.width=Integer.parseInt(w);
+    }
+
+    public gif(String url, String id, int h, int w, boolean fav){
+        this.url=url;
+        this.id=id;
+        this.fav=fav;
+        this.height=h;
+        this.width=w;
     }
 
     public int getHeight() {
@@ -70,10 +78,14 @@ class gif{
 }
 
 public class gifs {
-    private static ArrayList<gif> gifs_list;
+    private ArrayList<gif> gifs_list;
 
-    public void add_gif(String name, String id, String h,String w){
-        gifs_list.add(new gif(name, id,h,w));
+    public void add_gif(String url, String id, String h,String w,boolean fav){
+        gifs_list.add(new gif(url, id,h,w,fav));
+    }
+
+    public void add_gif(String url, String id, int h, int w, boolean fav){
+        gifs_list.add(new gif(url, id,h,w,fav));
     }
 
     public gif get_gif(int idx){
@@ -93,6 +105,6 @@ public class gifs {
 
 
     public gifs(){
-        gifs_list=new ArrayList<gif>();
+        gifs_list=new ArrayList<>();
     }
 }
