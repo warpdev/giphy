@@ -31,9 +31,6 @@ public class MainActivity extends AppCompatActivity {
             SP_editor.apply();
         }
         SP_editor.commit();
-        if(sharedPreferences.contains("favorlist")){
-            Log.e("contain","main");
-        }
 
     }
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Giphytest</string>
+    <integer name="limit">25</integer>
+    <integer name="refresh_count">10</integer>
 </resources>

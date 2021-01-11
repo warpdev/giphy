@@ -13,6 +13,7 @@ import android.util.JsonReader;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -62,9 +63,7 @@ public class trend_page extends AppCompatActivity {
                     }
                 }
 
-//                Log.e("ck","loading : "+ loading + " pos : "+ pos+" size : "+gifs_list.get_size());
-
-                if(!loading && pos>=gifs_list.get_size()-10){
+                if(!loading && pos>=gifs_list.get_size()-getResources().getInteger(R.integer.refresh_count)){  //마지막 아이템에서 refresh_count만큼 떨어져있는 아이템을 보고있을때 미리 서버에서 데이터 가져옴
                     loading=true;
                     read_data();
 
@@ -72,10 +71,6 @@ public class trend_page extends AppCompatActivity {
 
             }
         });
-
-
-
-
     }
     public void read_data(){
         contactAPI con_api = new contactAPI();
@@ -85,15 +80,13 @@ public class trend_page extends AppCompatActivity {
 
     class contactAPI extends AsyncTask<String, Void, Void> {
 
-
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&offset="+gifs_list.get_size());
+                URL trend_endpoint = new URL("https://api.giphy.com/v1/gifs/trending?" + "api_key=" + strings[0]+"&offset="+gifs_list.get_size()+"&limit="+getResources().getInteger(R.integer.limit));
                 HttpsURLConnection connection = (HttpsURLConnection) trend_endpoint.openConnection();
 
                 if (connection.getResponseCode() == 200) {
-
                     InputStream response_data = connection.getInputStream();
                     InputStreamReader response_reader = new InputStreamReader(response_data, "UTF-8");
                     BufferedReader buff_reader = new BufferedReader(response_reader, 8*1024); //스트링버퍼로 처리후에 jsonobject로 파싱해서 쓰는방법으로 처리
@@ -104,17 +97,21 @@ public class trend_page extends AppCompatActivity {
                     }
                     JSONObject jsonObject = new JSONObject(sb.toString());
                     JSONArray jsonArray = jsonObject.getJSONArray("data");
-
-
-                    int t_size=gifs_list.get_size();
-                    Log.e("size",t_size+"");
-                    for(int i=0; i<25; i++) {
-                        gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"), jsonArray.getJSONObject(i).getString("id"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"),sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
-//                        if(sharedPreferences.contains(gifs_list.get_gif(t_size+i).getId())){
-//                            Log.e("True","appear");
-//                            gifs_list.get_gif(t_size+i).setFav(true);
-//                        }
-                        Log.e("test",gifs_list.get_gif(t_size+i).toString());
+                    int t_size = jsonArray.length();
+                    for(int i=0; i<t_size; i++) {
+                        try {
+                            gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("url"),
+                                    jsonArray.getJSONObject(i).getString("id"),
+                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("height"),
+                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("preview_gif").getString("width"),
+                                    sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+                        }catch (JSONException e){   //preivew가 없는경우에 original로 불러오기
+                            gifs_list.add_gif(jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("url"),
+                                    jsonArray.getJSONObject(i).getString("id"),
+                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("height"),
+                                    jsonArray.getJSONObject(i).getJSONObject("images").getJSONObject("original").getString("width"),
+                                    sharedPreferences.contains(jsonArray.getJSONObject(i).getString("id")));
+                        }
                     }
                 }
                 connection.disconnect();
@@ -128,12 +125,7 @@ public class trend_page extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
-
-            Log.e("connection","finish");
             list_adapter.notifyDataSetChanged();
-
-
             loading=false;
         }
 

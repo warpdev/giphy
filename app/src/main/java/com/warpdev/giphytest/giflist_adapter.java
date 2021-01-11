@@ -58,7 +58,6 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.gif_row_layout, parent, false);
-
         return new giflist_ViewHolder(v);
     }
 
@@ -74,56 +73,47 @@ public class giflist_adapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         canvas.drawColor(Color.GRAY);
         Drawable drawable = new BitmapDrawable(null,bitmap);
         Glide.with(viewHolder.GifView).load(turi).placeholder(drawable).into(viewHolder.GifView);
-        viewHolder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                Log.e("test","changed");
-//                Log.e("test",isChecked+""+" pos: "+position);
-                SharedPreferences.Editor SP_editor = sharedPreferences.edit();
+        viewHolder.aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {  //favorite 스위치 클릭할때
+            SharedPreferences.Editor SP_editor = sharedPreferences.edit();
 
-                for(int i = 0; i<gifs_list.get_size(); i++){
-                    gifs_list.get_gif(position).setFav(isChecked);
-                    if(gifs_list.get_gif(i).getFav()){
+            for(int i = 0; i<gifs_list.get_size(); i++){
+                gifs_list.get_gif(position).setFav(isChecked);
+                if(gifs_list.get_gif(i).getFav()){
+                    id_sets=sharedPreferences.getStringSet("favorlist",null);   //favorlist : favor누른것들의 id집합
+                    if(id_sets!=null){
+                        id_sets.add(gifs_list.get_gif(i).getId());
+                    }
+
+                    SP_editor.putString(gifs_list.get_gif(i).getId(),gifs_list.get_gif(i).getUrl());    //id : url 저장
+                    SP_editor.putInt(gifs_list.get_gif(i).getId()+"_w",gifs_list.get_gif(i).getWidth());    // (id)_w : width 저장
+                    SP_editor.putInt(gifs_list.get_gif(i).getId()+"_h",gifs_list.get_gif(i).getHeight());   // (id)_h : height 저장
+                    SP_editor.apply();
+                }
+                else{
+                    if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
+
                         id_sets=sharedPreferences.getStringSet("favorlist",null);
+
                         if(id_sets!=null){
-                            id_sets.add(gifs_list.get_gif(i).getId());
-                            Log.e("list","add");
+                            id_sets.remove(gifs_list.get_gif(i).getId());
+                            SP_editor.remove("favorlist");
+                            SP_editor.putStringSet("favorlist",id_sets);    //favorlist 갱신하기
                         }
 
-                        SP_editor.putString(gifs_list.get_gif(i).getId(),gifs_list.get_gif(i).getUrl());
-                        SP_editor.putInt(gifs_list.get_gif(i).getId()+"_w",gifs_list.get_gif(i).getWidth());
-                        SP_editor.putInt(gifs_list.get_gif(i).getId()+"_h",gifs_list.get_gif(i).getHeight());
+                        SP_editor.remove(gifs_list.get_gif(i).getId());
+                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_w");
+                        SP_editor.remove(gifs_list.get_gif(i).getId()+"_h");
                         SP_editor.apply();
                     }
-                    else{
-                        if(sharedPreferences.contains(gifs_list.get_gif(i).getId())){
-
-                            id_sets=sharedPreferences.getStringSet("favorlist",null);
-
-                            if(id_sets!=null){
-                                id_sets.remove(gifs_list.get_gif(i).getId());
-                                SP_editor.remove("favorlist");
-                                SP_editor.putStringSet("favorlist",id_sets);
-                            }
-
-                            SP_editor.remove(gifs_list.get_gif(i).getId());
-                            SP_editor.remove(gifs_list.get_gif(i).getId()+"_w");
-                            SP_editor.remove(gifs_list.get_gif(i).getId()+"_h");
-                            SP_editor.apply();
-                        }
-                    }
                 }
-                SP_editor.commit();
             }
+            SP_editor.commit();
         });
-
         viewHolder.aSwitch.setChecked(gifs_list.get_gif(position).getFav());
-//        Log.e("size","w : "+w+", h : "+h);
     }
 
     @Override
     public int getItemCount() {
-
         return gifs_list.get_size();
     }
 }
