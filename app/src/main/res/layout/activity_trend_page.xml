@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@color/cardview_dark_background"
-    tools:context=".trend_page"
+    tools:context=".TrendPage"
     android:orientation="horizontal">
 
     <androidx.recyclerview.widget.RecyclerView

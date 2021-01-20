@@ -5,17 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import org.json.JSONObject;
-
-import java.security.SecurityPermission;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
+/**
+ * 앱을 실행하면 표시되는 MainActivity
+ * onCreate에서 SharedPreferences에 favorlist의 존재를 확인하고 없다면 새로 넣어준다.
+ *
+ * @author warpdev
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -23,24 +23,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences sharedPreferences = getSharedPreferences("favor",Context.MODE_PRIVATE);
-        SharedPreferences.Editor SP_editor = sharedPreferences.edit();
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
 
         if(!sharedPreferences.contains("favorlist")){
-            LinkedHashSet<String> t_set = new LinkedHashSet<>();
-            SP_editor.putStringSet("favorlist",t_set);
-            SP_editor.apply();
+            LinkedHashSet<String> favorList = new LinkedHashSet<>();
+            sharedPreferencesEditor.putStringSet("favorlist",favorList);
+            sharedPreferencesEditor.apply();
         }
-        SP_editor.commit();
-
+        sharedPreferencesEditor.commit();
     }
 
-    public void trending_click(View v){
-        Intent i= new Intent(MainActivity.this, trend_page.class);
-        startActivity(i);
+
+    /** Trending Gifs 버튼 클릭시 */
+    public void trendingClick(View v){
+        startActivity(new Intent(MainActivity.this, TrendPage.class));
     }
 
-    public void favor_click(View v){
-        Intent i = new Intent(MainActivity.this,favor_page.class);
-        startActivity(i);
+    /** Favorite List 버튼 클릭시 */
+    public void favoriteClick(View v){
+        startActivity(new Intent(MainActivity.this, FavoritePage.class));
     }
 }

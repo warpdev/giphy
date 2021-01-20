@@ -11,7 +11,7 @@
         android:id="@+id/trend_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="trending_click"
+        android:onClick="trendingClick"
         android:text="Trending GIFs"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
@@ -20,7 +20,7 @@
         android:id="@+id/favor_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="favor_click"
+        android:onClick="favoriteClick"
         android:text="Favorite list"
         app:layout_constraintTop_toBottomOf="@+id/trend_btn"
         tools:layout_editor_absoluteX="139dp" />

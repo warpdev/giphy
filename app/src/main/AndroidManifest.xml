@@ -10,8 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Giphytest">
 
-        <activity android:name=".favor_page"></activity>
-        <activity android:name=".trend_page" />
+        <activity android:name=".FavoritePage"></activity>
+        <activity android:name=".TrendPage" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
