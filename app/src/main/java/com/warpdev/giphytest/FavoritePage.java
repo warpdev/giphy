@@ -44,7 +44,7 @@ public class FavoritePage extends AppCompatActivity {
             }
         }
         RecyclerView favoriteRecyclerView = findViewById(R.id.favor_rec);
-        GifListAdapter gifListAdapter = new GifListAdapter(favoriteImageList, sharedPreferences);
+        GifListAdapter gifListAdapter = new GifListAdapter(sharedPreferences);
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setItemPrefetchEnabled(true);
         favoriteRecyclerView.setAdapter(gifListAdapter);

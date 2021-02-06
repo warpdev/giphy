@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,12 @@ import android.widget.ImageView;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * @author warpdev
  */
-public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GifListAdapter extends PagedListAdapter<ImageData, RecyclerView.ViewHolder> {
     public static class giflist_ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public Switch mSwitch;
@@ -42,9 +42,6 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /** 미리보기 이미지를 위한 색상코드 */
     private static final String[] colors = {"#75FAA2", "#5ACAFA", "#8D41F6", "#ED706B", "#FDF276"};
 
-    /** 로드할 이미지들의 정보가 담겨있는 ArrayList */
-    private ArrayList<ImageData> mGifsList;
-
     /** Favorite 리스트에 기록을 하기 위한 SharedPreferences Object */
     private SharedPreferences mSharedPreferences;
 
@@ -54,11 +51,10 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /**
      * GifListAdapter 생성자
      *
-     * @param gifsList          이미지들에 대한 정보들이 담겨있는 ArrayList
      * @param sharedPreferences Favorite리스트 기록을 위한 SharedPreferences Object
      */
-    public GifListAdapter(ArrayList<ImageData> gifsList, SharedPreferences sharedPreferences) {
-        this.mGifsList = gifsList;
+    public GifListAdapter(SharedPreferences sharedPreferences) {
+        super(DIFF_CALLBACK);
         this.mSharedPreferences = sharedPreferences;
         this.mColorParam = 0;
     }
@@ -69,18 +65,28 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return new giflist_ViewHolder(v);
     }
 
+    private static DiffUtil.ItemCallback<ImageData> DIFF_CALLBACK = new DiffUtil.ItemCallback<ImageData>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull ImageData oldItem, @NonNull ImageData newItem) {
+            return oldItem.equals(newItem);
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull ImageData oldItem, @NonNull ImageData newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+    };
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         giflist_ViewHolder viewHolder = (giflist_ViewHolder) holder;
 
-        //Glide로 불러올 이미지의 주소
-        Uri tUri = Uri.parse(mGifsList.get(position).getAboutGif().getUrl());
 
         //이미지의 width
-        int w = mGifsList.get(position).getAboutGif().getWidth();
+        int w = getItem(position).getAboutGif().getWidth();
 
         //이미지의 height
-        int h = mGifsList.get(position).getAboutGif().getHeight();
+        int h = getItem(position).getAboutGif().getHeight();
 
         /*
           로딩 전에 알록달록한 타일로 표시하기 위한 작업
@@ -90,13 +96,14 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.parseColor(colors[(mColorParam++) % 5]));
         Drawable drawable = new BitmapDrawable(null, bitmap);
+        getItem(position).setFavorite(mSharedPreferences.contains(getItem(position).getId()));
 
         /*
           GifView에 이미지 로드
           placeholder      로드되는 동안 보여질 이미지 지정 옵션
           override         지정된 width와 height로 이미지를 리사이즈하는 옵션
          */
-        Glide.with(viewHolder.mImageView).load(tUri).placeholder(drawable).override(w, h).into(viewHolder.mImageView);
+        Glide.with(viewHolder.mImageView).load(getItem(position).getAboutGif().getUrl()).placeholder(drawable).override(w, h).into(viewHolder.mImageView);
 
         //Favorite 버튼에 대한 클릭 리스너
         viewHolder.mSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {  //favorite 스위치 클릭할때
@@ -104,9 +111,11 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //Favorite 리스트에 저장하기 위한 SharedPreferencesEditor
             SharedPreferences.Editor sharedPreferencesEditor = mSharedPreferences.edit();
 
+            SharedPreferenceManager sharedPreferenceManager = new SharedPreferenceManager();
+
             //현재 누른 Gif의 Favovite여부를 갱신
-            mGifsList.get(viewHolder.getAdapterPosition()).setFavorite(isChecked);
-            ImageData imageData = mGifsList.get(viewHolder.getAdapterPosition());
+            ImageData imageData = getItem(position);
+            getItem(position).setFavorite(isChecked);
 
             Set<String> idSets;
 
@@ -118,10 +127,14 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     idSets.add(imageData.getId());
                 }
 
-                sharedPreferencesEditor.putString(imageData.getId(), imageData.getAboutGif().getUrl());    //id : url 저장
-                sharedPreferencesEditor.putInt(imageData.getId() + "_w", imageData.getAboutGif().getWidth());    // (id)_w : width 저장
-                sharedPreferencesEditor.putInt(imageData.getId() + "_h", imageData.getAboutGif().getHeight());   // (id)_h : height 저장
-                sharedPreferencesEditor.apply();
+                sharedPreferenceManager.writeData(imageData.getId(), imageData.getAboutGif().getUrl());
+                sharedPreferenceManager.writeData(imageData.getId() + "_w", imageData.getAboutGif().getWidth());
+                sharedPreferenceManager.writeData(imageData.getId() + "_h", imageData.getAboutGif().getHeight());
+                sharedPreferenceManager.commitData();
+//                sharedPreferencesEditor.putString(imageData.getId(), imageData.getAboutGif().getUrl());    //id : url 저장
+//                sharedPreferencesEditor.putInt(imageData.getId() + "_w", imageData.getAboutGif().getWidth());    // (id)_w : width 저장
+//                sharedPreferencesEditor.putInt(imageData.getId() + "_h", imageData.getAboutGif().getHeight());   // (id)_h : height 저장
+//                sharedPreferencesEditor.apply();
             } else {
                 //Favorate를 비활성화 했을 때
                 if (mSharedPreferences.contains(imageData.getId())) {
@@ -144,11 +157,6 @@ public class GifListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
 
         //Switch의 체크 여부를 갱신
-        viewHolder.mSwitch.setChecked(mGifsList.get(position).isFavorite());
-    }
-
-    @Override
-    public int getItemCount() {
-        return mGifsList.size();
+        viewHolder.mSwitch.setChecked(getItem(position).isFavorite());
     }
 }
