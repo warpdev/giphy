@@ -1,5 +1,6 @@
 package com.warpdev.giphytest;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,11 +9,11 @@ import java.util.Set;
 
 public class SharedPreferenceManager extends AppCompatActivity {
 
-    private SharedPreferences mSharedPreferences;
+    public static SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mSharedPreferencesEditor;
 
     public SharedPreferenceManager(){
-        mSharedPreferences = getSharedPreferences("favor",MODE_PRIVATE);
+//        mSharedPreferences = getApplication().getSharedPreferences("favor", Context.MODE_PRIVATE);
         mSharedPreferencesEditor = mSharedPreferences.edit();
     }
 
@@ -35,6 +36,18 @@ public class SharedPreferenceManager extends AppCompatActivity {
     public void removeData(String key) {
         mSharedPreferencesEditor.remove(key);
         mSharedPreferencesEditor.apply();
+    }
+
+    public String getString(String key) {
+        return mSharedPreferences.getString(key, null);
+    }
+
+    public int getInt(String key) {
+        return mSharedPreferences.getInt(key, 0);
+    }
+
+    public Set<String> getStringSet(String key) {
+        return mSharedPreferences.getStringSet(key, null);
     }
 
     public boolean isContain(String key) {

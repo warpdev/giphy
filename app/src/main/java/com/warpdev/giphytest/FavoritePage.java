@@ -25,26 +25,26 @@ public class FavoritePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favor_page);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("favor", Context.MODE_PRIVATE);
+        SharedPreferenceManager sharedPreferenceManager = new SharedPreferenceManager();
 
         //Gif에 대한 정보들이 담길 ArrayList
         ArrayList<ImageData> favoriteImageList = new ArrayList<>();
         //SharedPreferences 에서 Favorite한 목록을 가져온다.
-        Set<String> favoriteSets = sharedPreferences.getStringSet("favorlist", null);
+        Set<String> favoriteSets = sharedPreferenceManager.getStringSet("favorlist");
 
         if (favoriteSets != null) {
             //SharedPreferences 에 있는 정보를 ArrayList에 담는다.
             for (String tId : favoriteSets) {
                 ImageData.GifImage.AboutGif aboutGif = new ImageData.GifImage.AboutGif(
-                        sharedPreferences.getInt(tId + "_h", 0),
-                        sharedPreferences.getInt(tId + "_w", 0),
-                        sharedPreferences.getString(tId, null));
+                        sharedPreferenceManager.getInt(tId + "_h"),
+                        sharedPreferenceManager.getInt(tId + "_w"),
+                        sharedPreferenceManager.getString(tId));
                 ImageData imageData = new ImageData(tId, aboutGif, true);
                 favoriteImageList.add(imageData);
             }
         }
         RecyclerView favoriteRecyclerView = findViewById(R.id.favor_rec);
-        GifListAdapter gifListAdapter = new GifListAdapter(sharedPreferences);
+        FavoriteListAdapter gifListAdapter = new FavoriteListAdapter(favoriteImageList);
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setItemPrefetchEnabled(true);
         favoriteRecyclerView.setAdapter(gifListAdapter);

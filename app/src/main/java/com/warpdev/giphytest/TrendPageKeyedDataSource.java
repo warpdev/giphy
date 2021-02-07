@@ -35,15 +35,11 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
 
         Log.e("test","loadInital");
         ArrayList<ImageData> gifList=new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.giphy.com/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        TrendingInterface trendingInterface = retrofit.create(TrendingInterface.class);
+        ApiConnectionCreator apiConnectionCreator = new ApiConnectionCreator();
 
         //getList(Api키, 데이터를 불러올 시작 위치, 데이터를 가져오는 갯수)
-        Call<TrendingResult> trendingResults = trendingInterface.getList("tl2VpgSXvm9XutwI0GlNZec0XcGqhnJx", 0, 25);
+        Call<TrendingResult> trendingResults = apiConnectionCreator.getTrendingInterface().getList("tl2VpgSXvm9XutwI0GlNZec0XcGqhnJx", 0, 25);
 
         trendingResults.enqueue(new Callback<TrendingResult>() {
 
@@ -91,15 +87,11 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
 
         Log.e("test","loadAfter");
         ArrayList<ImageData> gifList= new ArrayList<>();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.giphy.com/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        TrendingInterface trendingInterface = retrofit.create(TrendingInterface.class);
+        ApiConnectionCreator apiConnectionCreator = new ApiConnectionCreator();
 
         //getList(Api키, 데이터를 불러올 시작 위치, 데이터를 가져오는 갯수)
-        Call<TrendingResult> trendingResults = trendingInterface.getList("tl2VpgSXvm9XutwI0GlNZec0XcGqhnJx", params.key, 25);
+        Call<TrendingResult> trendingResults = apiConnectionCreator.getTrendingInterface().getList("tl2VpgSXvm9XutwI0GlNZec0XcGqhnJx", params.key, 25);
         trendingResults.enqueue(new Callback<TrendingResult>() {
 
             /** 연결 성공시 처리 */

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SharedPreferences sharedPreferences = getSharedPreferences("favor",Context.MODE_PRIVATE);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        SharedPreferenceManager.mSharedPreferences= sharedPreferences;
 
         if(!sharedPreferences.contains("favorlist")){
             LinkedHashSet<String> favorList = new LinkedHashSet<>();

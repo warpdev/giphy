@@ -38,7 +38,6 @@ import java.util.HashSet;
 public class TrendPage extends AppCompatActivity {
 
     /** Favorite를 기록하기 위한 SharedPreferences object */
-    private SharedPreferences mSharedPreferences;
 
     private GifListAdapter mGifListAdapter;
     private RecyclerView.LayoutManager mRecyclerLayoutManager;
@@ -51,11 +50,10 @@ public class TrendPage extends AppCompatActivity {
         RecyclerView gifRecyclerView = findViewById(R.id.gif_recview);
         mRecyclerLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerLayoutManager.setItemPrefetchEnabled(true);
-        mSharedPreferences = getSharedPreferences("favor", Context.MODE_PRIVATE);
 
         TrendViewModel trendViewModel = new ViewModelProvider(this).get(TrendViewModel.class);
 
-        mGifListAdapter = new GifListAdapter(mSharedPreferences);
+        mGifListAdapter = new GifListAdapter();
         trendViewModel.getPagedListLiveData().observe(this, imageData -> {
             mGifListAdapter.submitList(imageData);
         });
