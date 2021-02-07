@@ -21,6 +21,13 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.Set;
 
+
+/**
+ * FavoritePage를 위한 어댑터
+ * TrendPage처럼 Paging Library를 사용하는 방식을 생각 해보았으나 사용자가 Favorite하는 갯수에 비해 비효율적이라 생각
+ *
+ * @author warpdev
+ */
 public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 public static class giflist_ViewHolder extends RecyclerView.ViewHolder {
     public ImageView mImageView;
@@ -128,7 +135,6 @@ public static class giflist_ViewHolder extends RecyclerView.ViewHolder {
                     sharedPreferenceManager.removeData(imageData.getId() + "_h");
                 }
             }
-            sharedPreferenceManager.commitData();
         });
 
         //Switch의 체크 여부를 갱신

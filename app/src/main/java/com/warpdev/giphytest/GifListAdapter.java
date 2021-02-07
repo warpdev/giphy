@@ -124,7 +124,6 @@ public class GifListAdapter extends PagedListAdapter<ImageData, RecyclerView.Vie
                 sharedPreferenceManager.writeData(imageData.getId(), imageData.getAboutGif().getUrl());    //id : url 저장
                 sharedPreferenceManager.writeData(imageData.getId() + "_w", imageData.getAboutGif().getWidth());    // (id)_w : width 저장
                 sharedPreferenceManager.writeData(imageData.getId() + "_h", imageData.getAboutGif().getHeight());   // (id)_h : height 저장
-                sharedPreferenceManager.commitData();
             } else {
                 //Favorate를 비활성화 했을 때
                 if (sharedPreferenceManager.isContain(imageData.getId())) {
@@ -141,7 +140,6 @@ public class GifListAdapter extends PagedListAdapter<ImageData, RecyclerView.Vie
                     sharedPreferenceManager.removeData(imageData.getId() + "_h");
                 }
             }
-            sharedPreferenceManager.commitData();
         });
 
         //Switch의 체크 여부를 갱신

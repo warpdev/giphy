@@ -30,7 +30,6 @@ import java.util.HashSet;
 
 /**
  * activity_trend_page 레이아웃의 엑티비티
- * GIPHY Trending Gifs를 가져오고 RecyclerView의 infinity scroll을 구현함.
  *
  * @author warpdev
  */
@@ -54,13 +53,12 @@ public class TrendPage extends AppCompatActivity {
         TrendViewModel trendViewModel = new ViewModelProvider(this).get(TrendViewModel.class);
 
         mGifListAdapter = new GifListAdapter();
+        //데이터의 변화를 감지하고 변화시에 리스트를 갱신한다.
         trendViewModel.getPagedListLiveData().observe(this, imageData -> {
             mGifListAdapter.submitList(imageData);
         });
 
         gifRecyclerView.setAdapter(mGifListAdapter);
         gifRecyclerView.setLayoutManager(mRecyclerLayoutManager);
-
-
     }
 }

@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 /**
  * 앱을 실행하면 표시되는 MainActivity
  * onCreate에서 SharedPreferences에 favorlist의 존재를 확인하고 없다면 새로 넣어준다.
+ * SharedPreferenceManager의 mSharedPreferences 레퍼런스를 설정해준다.
  *
  * @author warpdev
  */
@@ -24,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SharedPreferences sharedPreferences = getSharedPreferences("favor",Context.MODE_PRIVATE);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        SharedPreferenceManager.mSharedPreferences= sharedPreferences;
+
+        SharedPreferenceManager.mSharedPreferences= sharedPreferences;  //SharedPreferenceManger의 sharedPreference 설정
 
         if(!sharedPreferences.contains("favorlist")){
             LinkedHashSet<String> favorList = new LinkedHashSet<>();

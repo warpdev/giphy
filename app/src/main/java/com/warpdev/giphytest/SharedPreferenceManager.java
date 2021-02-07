@@ -1,19 +1,24 @@
 package com.warpdev.giphytest;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Set;
 
+/**
+ * SharedPreference를 어디에서나 사용하기 위해 만든 클래스
+ * mSharedPreferences는 MainActivity에서 값을 설정해준다.
+ * 기록할 정보의 유형별로 writeData메소드를 생성해준다.
+ *
+ * @author warpdev
+ */
 public class SharedPreferenceManager extends AppCompatActivity {
 
     public static SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mSharedPreferencesEditor;
 
     public SharedPreferenceManager(){
-//        mSharedPreferences = getApplication().getSharedPreferences("favor", Context.MODE_PRIVATE);
         mSharedPreferencesEditor = mSharedPreferences.edit();
     }
 
@@ -31,7 +36,6 @@ public class SharedPreferenceManager extends AppCompatActivity {
         mSharedPreferencesEditor.putStringSet(key, value);
         mSharedPreferencesEditor.apply();
     }
-
 
     public void removeData(String key) {
         mSharedPreferencesEditor.remove(key);
@@ -52,9 +56,5 @@ public class SharedPreferenceManager extends AppCompatActivity {
 
     public boolean isContain(String key) {
         return mSharedPreferences.contains(key);
-    }
-
-    public void commitData() {
-        mSharedPreferencesEditor.commit();
     }
 }

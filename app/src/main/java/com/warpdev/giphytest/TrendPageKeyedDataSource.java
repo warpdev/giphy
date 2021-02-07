@@ -1,26 +1,21 @@
 package com.warpdev.giphytest;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.media.Image;
-import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.paging.ItemKeyedDataSource;
 import androidx.paging.PageKeyedDataSource;
-import androidx.paging.PositionalDataSource;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * TrendGif들에 대한 DataSource
+ * 한 페이지당 25개로 설정하고 0번부터 불러온다.
+ *
+ * @author warpdev
+ */
 public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, ImageData> {
 
     /** 불러온 이미지들에 대한 IdSets */
@@ -33,16 +28,16 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, ImageData> callback) {
 
-        Log.e("test","loadInital");
+        //불러온 데이터를 넣어줄 ArrayList
         ArrayList<ImageData> gifList=new ArrayList<>();
 
+        //데이터를 불러오기위한 object
         ApiConnectionCreator apiConnectionCreator = new ApiConnectionCreator();
 
         //getList(Api키, 데이터를 불러올 시작 위치, 데이터를 가져오는 갯수)
         Call<TrendingResult> trendingResults = apiConnectionCreator.getTrendingInterface().getList("tl2VpgSXvm9XutwI0GlNZec0XcGqhnJx", 0, 25);
 
         trendingResults.enqueue(new Callback<TrendingResult>() {
-
             /** 연결 성공시 처리 */
             @Override
             public void onResponse(Call<TrendingResult> call, Response<TrendingResult> response) {
@@ -69,12 +64,11 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
                 }
             }
 
-            /** 네트워크 연결 실패시 알림을 띄움 */
             @Override
             public void onFailure(Call<TrendingResult> call, Throwable t) {
+                //사용자의 네트워크에 문제가 있는 경우
             }
         });
-        Log.e("gifList",gifList.size()+"");
     }
 
     @Override
@@ -85,9 +79,10 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ImageData> callback) {
 
-        Log.e("test","loadAfter");
+        //불러온 데이터를 넣어줄 ArrayList
         ArrayList<ImageData> gifList= new ArrayList<>();
 
+        //데이터를 불러오기위한 object
         ApiConnectionCreator apiConnectionCreator = new ApiConnectionCreator();
 
         //getList(Api키, 데이터를 불러올 시작 위치, 데이터를 가져오는 갯수)
@@ -119,9 +114,9 @@ public class TrendPageKeyedDataSource extends PageKeyedDataSource<Integer, Image
                 }
             }
 
-            /** 네트워크 연결 실패시 알림을 띄움 */
             @Override
             public void onFailure(Call<TrendingResult> call, Throwable t) {
+                //사용자의 네트워크에 문제가 있는 경우
             }
         });
 

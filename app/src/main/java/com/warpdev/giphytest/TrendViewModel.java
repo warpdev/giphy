@@ -5,11 +5,15 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+/**
+ * TrendPage에 대한 ViewModel
+ * PagedList를 만든다.
+ *
+ * @author warpdev
+ */
 public class TrendViewModel extends AndroidViewModel {
     private LiveData<PagedList<ImageData>> pagedListLiveData;
 
@@ -17,7 +21,6 @@ public class TrendViewModel extends AndroidViewModel {
     public TrendViewModel(@NonNull Application application) {
         super(application);
         TrendDataFactory trendDataFactory = new TrendDataFactory();
-        MutableLiveData<TrendPageKeyedDataSource> dataSourceMutableLiveData = trendDataFactory.getImageDataLiveData();
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
